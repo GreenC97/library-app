@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Library Book Tracker</title>
+  <style>
+    body { font-family: Arial; max-width: 600px; margin: 40px auto; padding: 20px; }
+    input { width: 100%; padding: 10px; font-size: 16px; margin: 10px 0; }
+    button { padding: 10px 20px; font-size: 16px; margin: 5px; cursor: pointer; }
+    #result { margin-top: 20px; padding: 15px; background: #f0f0f0; border-radius: 8px; }
+    .checkout { background: #4CAF50; color: white; border: none; }
+    .return { background: #2196F3; color: white; border: none; }
+  </style>
+</head>
+<body>
+  <h1>📚 Library Book Tracker</h1>
+
+  <input id="barcode" placeholder="Scan or type barcode here..." autofocus>
+  <input id="borrower" placeholder="Borrower name (for checkout only)">
+
+  <div>
+    <button class="checkout" onclick="checkoutBook()">Checkout Book</button>
+    <button class="return" onclick="returnBook()">Return Book</button>
+    <button onclick="scanBook()">Check Status</button>
+  </div>
+
+  <div id="result">Results will appear here...</div>
+
+  <script>
+    const API = 'http://127.0.0.1:5000';
+
+    async function scanBook() {
+      const barcode = document.getElementById('barcode').value;
+      const res = await fetch(API + '/scan', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ barcode })
+      });
+      const data = await res.json();
+      document.getElementById('result').innerText = JSON.stringify(data, null, 2);
+    }
+
+    async function checkoutBook() {
+      const barcode = document.getElementById('barcode').value;
+      const borrower = document.getElementById('borrower').value;
+      const res = await fetch(API + '/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ barcode, borrower })
+      });
+      const data = await res.json();
+      document.getElementById('result').innerText = JSON.stringify(data, null, 2);
+    }
+
+    async function returnBook() {
+      const barcode = document.getElementById('barcode').value;
+      const res = await fetch(API + '/return', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ barcode })
+      });
+      const data = await res.json();
+      document.getElementById('result').innerText = JSON.stringify(data, null, 2);
+    }
+
+    document.getElementById('barcode').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') scanBook();
+    });
+  </script>
+</body>
+</html>
