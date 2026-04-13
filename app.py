@@ -1,10 +1,8 @@
-
 from flask_cors import CORS
 from pymongo import MongoClient
 from datetime import datetime
 app = Flask(__name__)
 CORS(app)
-
 client = MongoClient("mongodb+srv://Banasafari:library20090@cluster0.qst4mml.mongodb.net/?appName=Cluster0")
 db = client["library"]
 books = db["books"]
@@ -30,8 +28,7 @@ def checkout():
         "barcode": barcode,
         "borrower": borrower,
         "checkout_date": datetime.now(),
-        "return_date": None
-    })
+        "return_date": None})
     return jsonify({"message": f"Checked out to {borrower}"})
 @app.route("/return", methods=["POST"])
 def return_book():
@@ -40,8 +37,7 @@ def return_book():
     books.update_one({"barcode": barcode}, {"$set": {"status": "available"}})
     loans.update_one(
         {"barcode": barcode, "return_date": None},
-        {"$set": {"return_date": datetime.now()}}
-    )
+        {"$set": {"return_date": datetime.now()}})
     return jsonify({"message": "Book returned"})
 @app.route("/return", methods=["POST"])
 def return_book_v2():
@@ -50,8 +46,7 @@ def return_book_v2():
     books.update_one({"barcode": barcode}, {"$set": {"status": "available"}})
     loans.update_one(
         {"barcode": barcode, "return_date": None},
-        {"$set": {"return_date": datetime.now()}}
-    )
+        {"$set": {"return_date": datetime.now()}} )
     return jsonify({"message": "Book returned"})
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8000))
