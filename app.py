@@ -44,7 +44,7 @@ def return_book():
     )
     return jsonify({"message": "Book returned"})
 @app.route("/return", methods=["POST"])
-def return_book():
+def return_book_v2():
     data = request.json
     barcode = data.get("barcode")
     books.update_one({"barcode": barcode}, {"$set": {"status": "available"}})
