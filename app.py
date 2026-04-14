@@ -2,13 +2,15 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from pymongo import MongoClient
 from datetime import datetime
+
 app = Flask(__name__)
 CORS(app)
 
-client = MongoClient("mongodb+srv://Banasafari:library20090@cluster0.qst4mml.mongodb.net/?appName=Cluster0")
+client = MongoClient("mongodb://localhost:27017/")
 db = client["library"]
 books = db["books"]
 loans = db["loans"]
+
 @app.route("/scan", methods=["POST"])
 def scan_barcode():
     data = request.json
@@ -17,6 +19,7 @@ def scan_barcode():
     if not book:
         return jsonify({"error": "Book not found"}), 404
     return jsonify({"title": book["title"], "status": book["status"]})
+
 @app.route("/checkout", methods=["POST"])
 def checkout():
     data = request.json
@@ -33,6 +36,7 @@ def checkout():
         "return_date": None
     })
     return jsonify({"message": f"Checked out to {borrower}"})
+
 @app.route("/return", methods=["POST"])
 def return_book():
     data = request.json
@@ -43,15 +47,8 @@ def return_book():
         {"$set": {"return_date": datetime.now()}}
     )
     return jsonify({"message": "Book returned"})
-@app.route("/return", methods=["POST"])
-def return_book_v2():
-    data = request.json
-    barcode = data.get("barcode")
-    books.update_one({"barcode": barcode}, {"$set": {"status": "available"}})
-    loans.update_one(
-        {"barcode": barcode, "return_date": None},
-        {"$set": {"return_date": datetime.now()}}
-    )
-    return jsonify({"message": "Book returned"})
+
 if __name__ == "__main__":
-    app.run(port=5000, debug=True)
+    import os
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=False)
