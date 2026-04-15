@@ -5,6 +5,11 @@ from datetime import datetime
 import os
 
 app = Flask(__name__)
+from flask import send_from_directory
+
+@app.route("/")
+def home():
+    return send_from_directory('.', 'index.html')
 CORS(app)
 
 client = MongoClient("mongodb+srv://Banasafari:library20090@cluster0.qst4mml.mongodb.net/?appName=Cluster0")
