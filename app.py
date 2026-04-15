@@ -2,11 +2,12 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from pymongo import MongoClient
 from datetime import datetime
+import os
 
 app = Flask(__name__)
 CORS(app)
 
-client = MongoClient("mongodb://localhost:27017/")
+client = MongoClient("mongodb+srv://Banasafari:library20090@cluster0.qst4mml.mongodb.net/?appName=Cluster0")
 db = client["library"]
 books = db["books"]
 loans = db["loans"]
@@ -49,6 +50,5 @@ def return_book():
     return jsonify({"message": "Book returned"})
 
 if __name__ == "__main__":
-    import os
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=False)
